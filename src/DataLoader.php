@@ -59,18 +59,22 @@ class DataLoader implements DataLoaderInterface
      */
     public function load($key)
     {
-        $this->checkKey($key, __METHOD__);
-        // Determine options
         $shouldBatch = $this->options->shouldBatch();
-        $shouldCache = $this->options->shouldCache();
-        $cacheKey = $this->getCacheKeyFromKey($key);
 
-        // If caching and there is a cache-hit, return cached Promise.
-        if ($shouldCache) {
-            $cachedPromise = $this->promiseCache->get($cacheKey);
-            if ($cachedPromise) {
-                return $cachedPromise;
+        if ($key !== null) {
+            $shouldCache = $this->options->shouldCache();
+            // Determine options
+            $cacheKey = $this->getCacheKeyFromKey($key);
+
+            // If caching and there is a cache-hit, return cached Promise.
+            if ($shouldCache) {
+                $cachedPromise = $this->promiseCache->get($cacheKey);
+                if ($cachedPromise) {
+                    return $cachedPromise;
+                }
             }
+        } else {
+            $shouldCache = false;
         }
 
         // Otherwise, produce a new Promise for this value.
